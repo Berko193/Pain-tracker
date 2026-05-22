@@ -807,7 +807,7 @@
 
   <!-- Daily Status -->
   <div class="card daily-status-card">
-    <div class="daily-status-header">דיווחי היום</div>
+    <div class="daily-status-header">דיווחי היום — <span id="dailyDate"></span></div>
     <div class="daily-slots">
       <div class="slot" id="slotMorning">
         <div class="slot-label">בוקר</div>
@@ -966,6 +966,7 @@
   }
 
   todayDate.textContent = formatDate(getTodayStr());
+  document.getElementById('dailyDate').textContent = formatDate(getTodayStr());
 
   // Slider updates
   const painSlider = document.getElementById('painSlider');
