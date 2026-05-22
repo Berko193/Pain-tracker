@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#f5f3ff">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest-he.json">
+<title>Pain Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  button, input, textarea { touch-action: manipulation; }
+
+  :root {
+    --purple-50: #f5f3ff;
+    --purple-100: #ede9fe;
+    --purple-200: #ddd6fe;
+    --purple-300: #c4b5fd;
+    --purple-400: #a78bfa;
+    --purple-500: #8b5cf6;
+    --purple-600: #7c3aed;
+    --purple-700: #6d28d9;
+    --pink-50: #fdf2f8;
+    --pink-100: #fce7f3;
+    --pink-200: #fbcfe8;
+    --pink-300: #f9a8d4;
+    --pink-400: #f472b6;
+    --pink-500: #ec4899;
+    --pink-600: #db2777;
+    --gray-50: #fafafa;
+    --gray-100: #f5f5f5;
+    --gray-200: #e5e5e5;
+    --gray-300: #d4d4d4;
+    --gray-400: #a3a3a3;
+    --gray-500: #737373;
+    --gray-600: #525252;
+    --gray-700: #404040;
+    --gray-800: #262626;
+    --green: #059669;
+    --green-bg: #ecfdf5;
+    --yellow: #d97706;
+    --yellow-bg: #fffbeb;
+    --red: #e11d48;
+    --red-bg: #fff1f2;
+    --red-border: #fecdd3;
+    --radius: 16px;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(160deg, var(--purple-50) 0%, #faf5ff 40%, #f5f0ff 100%);
+    color: var(--gray-700);
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    right: -30%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -30%;
+    left: -20%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(168,85,247,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* header */
+  header {
+    text-align: center;
+    padding: 32px 0 28px;
+    animation: fadeDown 0.6s ease-out;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  header .icon {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--purple-400), var(--purple-600));
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+  }
+
+  header .icon svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 2.4rem;
+    background: linear-gradient(135deg, var(--purple-500), var(--purple-700));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.01em;
+  }
+
+  header .date {
+    font-size: 0.82rem;
+    color: var(--gray-400);
+    margin-top: 6px;
+    font-weight: 400;
+  }
+
+  /* card */
+  .card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 24px rgba(139, 92, 246, 0.06), 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid rgba(196, 181, 253, 0.4);
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.5s ease-out both;
+  }
+
+  .card:nth-child(2) { animation-delay: 0.08s; }
+  .card:nth-child(3) { animation-delay: 0.14s; }
+  .card:nth-child(4) { animation-delay: 0.2s; }
+
+  /* Daily status */
+  .daily-status-card {
+    padding: 18px 20px;
+  }
+
+  .daily-status-header {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--purple-400);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .daily-slots {
+    display: flex;
+    gap: 10px;
+  }
+
+  .slot {
+    flex: 1;
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: 12px;
+    background: rgba(245, 243, 255, 0.5);
+    border: 1.5px solid var(--purple-100);
+    transition: all 0.2s ease;
+  }
+
+  .slot.done {
+    background: var(--green-bg);
+    border-color: #a7f3d0;
+  }
+
+  .slot.pending {
+    background: var(--yellow-bg);
+    border-color: #fde68a;
+  }
+
+  .slot-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 4px;
+  }
+
+  .slot-time {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 4px;
+  }
+
+  .slot.done .slot-time {
+    color: var(--green);
+  }
+
+  .slot-check {
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .slot.done .slot-check::after {
+    content: '\2713';
+    color: var(--green);
+  }
+
+  .slot.pending .slot-check::after {
+    content: '\2014';
+    color: var(--yellow);
+  }
+
+  .slot:not(.done):not(.pending) .slot-check::after {
+    content: '';
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* pain input */
+  .pain-input-section {
+    margin-bottom: 20px;
+  }
+
+  .pain-input-section label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--purple-400);
+    margin-bottom: 8px;
+  }
+
+  .pain-level-display {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .pain-level-display .level-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    line-height: 1;
+  }
+
+  .pain-level-display .level-label {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .pain-slider {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 4px;
+    outline: none;
+    margin-bottom: 0;
+    direction: ltr;
+  }
+
+  .pain-slider::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #a7f3d0, #fde68a, #fca5a5, #ef4444);
+  }
+
+  .pain-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--purple-500);
+    margin-top: -10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .pain-slider::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #a7f3d0, #fde68a, #fca5a5, #ef4444);
+  }
+
+  .pain-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--purple-500);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .slider-wrap {
+    position: relative;
+  }
+
+  .slider-wrap .pain-slider {
+    width: calc(100% + 28px);
+    margin: 0 -14px;
+  }
+
+  .slider-numbers {
+    display: flex;
+    direction: ltr;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+
+  .slider-numbers span {
+    width: 0;
+    display: flex;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: var(--gray-400);
+    font-weight: 600;
+    user-select: none;
+  }
+
+  /* notes field */
+  .notes-field {
+    margin-bottom: 20px;
+  }
+
+  .notes-field label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--purple-400);
+    margin-bottom: 8px;
+  }
+
+  .notes-field textarea {
+    width: 100%;
+    min-height: 70px;
+    border: 1.5px solid var(--purple-200);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--gray-800);
+    background: rgba(245, 243, 255, 0.5);
+    outline: none;
+    transition: all 0.2s ease;
+    resize: vertical;
+  }
+
+  .notes-field textarea::placeholder {
+    color: var(--purple-300);
+  }
+
+  .notes-field textarea:focus {
+    border-color: var(--purple-400);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  }
+
+  .char-counter {
+    text-align: left;
+    font-size: 0.7rem;
+    color: var(--gray-400);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .char-counter.near-limit {
+    color: var(--yellow);
+  }
+
+  .char-counter.at-limit {
+    color: var(--red);
+  }
+
+  .save-btn {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--purple-500), var(--purple-600));
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
+  }
+
+  .save-btn:active {
+    transform: scale(0.97);
+    opacity: 0.85;
+  }
+
+  /* trend card */
+  .trend-card { padding: 24px 16px; }
+
+  .trend-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding: 0 8px;
+  }
+
+  .trend-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: var(--gray-800);
+  }
+
+  .trend-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  .trend-indicator.improving {
+    background: var(--green-bg);
+    color: var(--green);
+  }
+
+  .trend-indicator.worsening {
+    background: var(--red-bg);
+    color: var(--red);
+  }
+
+  .trend-indicator.stable {
+    background: var(--yellow-bg);
+    color: var(--yellow);
+  }
+
+  .trend-indicator.nodata {
+    background: var(--gray-100);
+    color: var(--gray-400);
+  }
+
+  .trend-indicator svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    margin-bottom: 12px;
+  }
+
+  .chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .trend-period-btns {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .period-btn {
+    border: 1.5px solid var(--purple-200);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--purple-500);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .period-btn.active {
+    background: var(--purple-500);
+    color: white;
+    border-color: var(--purple-500);
+  }
+
+  .period-btn:active { opacity: 0.7; }
+
+  /* records */
+  .records-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .records-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: var(--gray-800);
+  }
+
+  .records-header .count {
+    font-size: 0.72rem;
+    color: var(--purple-500);
+    background: var(--purple-100);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .record {
+    display: flex;
+    align-items: center;
+    padding: 14px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    background: rgba(245, 243, 255, 0.6);
+    border: 1px solid var(--purple-100);
+    animation: fadeIn 0.3s ease-out both;
+    gap: 14px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .record .pain-score {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .record .pain-score.level-low { background: linear-gradient(135deg, #34d399, #059669); }
+  .record .pain-score.level-med { background: linear-gradient(135deg, #fbbf24, #d97706); }
+  .record .pain-score.level-high { background: linear-gradient(135deg, #fb7185, #e11d48); }
+
+  .record .rec-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .record .rec-date {
+    font-size: 0.82rem;
+    color: var(--gray-500);
+    font-weight: 500;
+  }
+
+  .record .rec-note {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    margin-top: 4px;
+    word-break: break-word;
+    white-space: pre-wrap;
+    line-height: 1.4;
+  }
+
+  .record .rec-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+
+  .record .delete-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: all 0.15s ease;
+    color: var(--red);
+    background: var(--red-bg);
+    align-self: flex-start;
+  }
+
+  .delete-btn:active { background: #fecdd3; }
+
+  /* action buttons */
+  .action-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .action-btn {
+    flex: 1;
+    height: 44px;
+    border: 1.5px solid var(--purple-200);
+    border-radius: 12px;
+    background: rgba(245, 243, 255, 0.5);
+    color: var(--purple-600);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .action-btn:active { transform: scale(0.96); opacity: 0.8; }
+
+  .clear-btn {
+    border-color: var(--red-border);
+    color: var(--red);
+    background: var(--red-bg);
+  }
+
+  .restore-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: var(--green-bg) !important;
+    border-color: #a7f3d0 !important;
+    color: var(--green) !important;
+  }
+
+  .restore-label:active { transform: scale(0.96); opacity: 0.8; }
+
+  /* toast */
+  .toast {
+    position: fixed;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--gray-800);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    z-index: 100;
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* toggle past */
+  .toggle-past-btn {
+    width: 100%;
+    height: 42px;
+    border: 1.5px solid var(--purple-200);
+    background: rgba(245, 243, 255, 0.5);
+    color: var(--purple-600);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+  }
+
+  .toggle-past-btn.cancel-mode {
+    background: var(--red-bg);
+    border-color: var(--red-border);
+    color: var(--red);
+  }
+
+  .toggle-past-btn:active { opacity: 0.7; }
+
+  .past-form {
+    margin-top: 16px;
+    padding: 18px 16px;
+    background: rgba(139, 92, 246, 0.06);
+    border: 1.5px dashed var(--purple-300);
+    border-radius: 14px;
+  }
+
+  .past-form input[type="date"],
+  .past-form input[type="time"] {
+    width: 100%;
+    height: 52px;
+    border: 1.5px solid var(--purple-200);
+    border-radius: 12px;
+    padding: 0 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--gray-800);
+    background: rgba(245, 243, 255, 0.5);
+    outline: none;
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+  }
+
+  .past-form input[type="date"]:focus,
+  .past-form input[type="time"]:focus {
+    border-color: var(--purple-400);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  }
+
+  .past-save-btn {
+    background: linear-gradient(135deg, var(--purple-600), var(--purple-700)) !important;
+    margin-top: 6px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .field {
+    flex: 1;
+    position: relative;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--purple-400);
+    margin-bottom: 8px;
+  }
+
+  /* responsive */
+  @media (max-width: 480px) {
+    .app { padding: 16px 16px calc(80px + env(safe-area-inset-bottom)); }
+    .card { padding: 22px 18px; }
+    header h1 { font-size: 1.55rem; }
+    .save-btn { height: 50px; font-size: 0.95rem; }
+    .record { padding: 12px 10px; }
+    .record .rec-date { font-size: 0.72rem; }
+    .trend-card { padding: 20px 12px; }
+  }
+
+  @media (max-width: 430px) and (min-height: 800px) {
+    header { padding: 28px 0 24px; }
+    .save-btn { height: 52px; }
+  }
+
+  @media (display-mode: standalone) {
+    header { padding-top: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="white" fill="none" stroke-width="1.5"/><path d="M12 6v6l4 2" stroke="white" fill="none" stroke-width="2"/></svg>
+    </div>
+    <h1>Pain Tracker</h1>
+    <div class="date" id="todayDate"></div>
+  </header>
+
+  <!-- Daily Status -->
+  <div class="card daily-status-card">
+    <div class="daily-status-header">דיווחי היום</div>
+    <div class="daily-slots">
+      <div class="slot" id="slotMorning">
+        <div class="slot-label">בוקר</div>
+        <div class="slot-time" id="slotMorningTime">—</div>
+        <div class="slot-check" id="slotMorningCheck"></div>
+      </div>
+      <div class="slot" id="slotEvening">
+        <div class="slot-label">ערב</div>
+        <div class="slot-time" id="slotEveningTime">—</div>
+        <div class="slot-check" id="slotEveningCheck"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="pain-input-section">
+      <label>רמת כאב</label>
+      <div class="pain-level-display">
+        <div class="level-number" id="levelDisplay">0</div>
+        <div class="level-label" id="levelLabel">No pain</div>
+      </div>
+      <div class="slider-wrap">
+        <input type="range" class="pain-slider" id="painSlider" min="0" max="7" step="0.5" value="0">
+        <div class="slider-numbers">
+          <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+        </div>
+      </div>
+    </div>
+    <div class="notes-field">
+      <label>הערות (אופציונלי)</label>
+      <textarea id="notesInput" placeholder="איך את מרגישה? מה עזר או החמיר את המצב?" maxlength="200"></textarea>
+      <div class="char-counter" id="notesCounter">0 / 200</div>
+    </div>
+    <button class="save-btn" id="saveBtn" type="button">הוספה</button>
+    <button class="toggle-past-btn" id="togglePastBtn" type="button"> הוספת רשומה ישנה +</button>
+    <div class="past-form" id="pastForm" style="display:none;">
+      <div class="input-row">
+        <div class="field">
+          <label>תאריך</label>
+          <input type="date" id="pastDate" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>שעה (24)</label>
+          <input type="time" id="pastTime" autocomplete="off">
+        </div>
+      </div>
+      <div class="pain-input-section">
+        <label>רמת כאב</label>
+        <div class="pain-level-display">
+          <div class="level-number" id="pastLevelDisplay">0</div>
+          <div class="level-label" id="pastLevelLabel">No pain</div>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" class="pain-slider" id="pastPainSlider" min="0" max="7" step="0.5" value="0">
+          <div class="slider-numbers">
+            <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+          </div>
+        </div>
+      </div>
+      <div class="notes-field">
+        <label>הערות (אופציונלי)</label>
+        <textarea id="pastNotesInput" placeholder="הערות..." maxlength="200"></textarea>
+        <div class="char-counter" id="pastNotesCounter">0 / 200</div>
+      </div>
+      <button class="save-btn past-save-btn" id="savePastBtn" type="button">הוספה מהעבר</button>
+    </div>
+  </div>
+
+  <!-- Trend Chart -->
+  <div class="card trend-card" id="trendCard" style="display:none;">
+    <div class="trend-header">
+      <h2>מגמה</h2>
+      <div class="trend-indicator nodata" id="trendIndicator">
+        <span id="trendText">אין נתונים</span>
+      </div>
+    </div>
+    <div class="chart-container">
+      <canvas id="trendChart"></canvas>
+    </div>
+    <div class="trend-period-btns">
+      <button class="period-btn active" data-days="7" type="button">7 ימים</button>
+      <button class="period-btn" data-days="14" type="button">14 ימים</button>
+      <button class="period-btn" data-days="30" type="button">30 ימים</button>
+      <button class="period-btn" data-days="0" type="button">הכל</button>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="card" id="recordsCard" style="display:none;">
+    <div class="records-header">
+      <h2>היסטוריית רשומות</h2>
+      <div class="count" id="recordCount"></div>
+    </div>
+    <div id="recordsList"></div>
+    <div class="action-row">
+      <button class="action-btn" id="exportBtn" type="button">העתקת רשומות</button>
+      <button class="action-btn clear-btn" id="clearBtn" type="button">מחיקת רשומות</button>
+    </div>
+  </div>
+
+  <!-- Backup -->
+  <div class="card">
+    <div class="records-header">
+      <h2>גיבוי</h2>
+    </div>
+    <div class="action-row">
+      <button class="action-btn" id="backupBtn" type="button">ייצוא</button>
+      <label class="action-btn restore-label" id="restoreLabel">
+         ייבוא
+        <input type="file" id="restoreFile" accept=".json" style="display:none">
+      </label>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">נשמר</div>
+
+<script>
+  const STORAGE_KEY = 'pain_records';
+  const levelDisplay = document.getElementById('levelDisplay');
+  const levelLabel = document.getElementById('levelLabel');
+  const notesInput = document.getElementById('notesInput');
+  const saveBtn = document.getElementById('saveBtn');
+  const recordsList = document.getElementById('recordsList');
+  const recordsCard = document.getElementById('recordsCard');
+  const recordCount = document.getElementById('recordCount');
+  const trendCard = document.getElementById('trendCard');
+  const toast = document.getElementById('toast');
+  const todayDate = document.getElementById('todayDate');
+
+  let currentPeriod = 7;
+
+  const painLabels = [
+    'ללא כאב', 'מינימלי', 'קל', 'קל-בינוני',
+    'בינוני', 'בינוני-חזק', 'חזק', 'חזק במיוחד'
+  ];
+
+  function getPainLabel(level) {
+    return painLabels[Math.round(level)] || '';
+  }
+
+  function getPainColor(level) {
+    if (level <= 2) return 'level-low';
+    if (level <= 4.5) return 'level-med';
+    return 'level-high';
+  }
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T12:00:00');
+    return d.toLocaleDateString('he-IL', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function getTodayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  todayDate.textContent = formatDate(getTodayStr());
+
+  // Slider updates
+  const painSlider = document.getElementById('painSlider');
+  function updateSliderDisplay(slider, display, label) {
+    const val = parseFloat(slider.value);
+    display.textContent = val % 1 === 0 ? val : val.toFixed(1);
+    label.textContent = getPainLabel(val);
+  }
+
+  painSlider.addEventListener('input', () => updateSliderDisplay(painSlider, levelDisplay, levelLabel));
+
+  const pastPainSlider = document.getElementById('pastPainSlider');
+  const pastLevelDisplay = document.getElementById('pastLevelDisplay');
+  const pastLevelLabel = document.getElementById('pastLevelLabel');
+  pastPainSlider.addEventListener('input', () => updateSliderDisplay(pastPainSlider, pastLevelDisplay, pastLevelLabel));
+
+  // Char counters
+  const MAX_CHARS = 200;
+  function updateCharCounter(textarea, counter) {
+    const len = textarea.value.length;
+    counter.textContent = len + ' / ' + MAX_CHARS;
+    counter.classList.remove('near-limit', 'at-limit');
+    if (len >= MAX_CHARS) counter.classList.add('at-limit');
+    else if (len >= MAX_CHARS * 0.8) counter.classList.add('near-limit');
+  }
+
+  const notesCounter = document.getElementById('notesCounter');
+  const pastNotesCounter = document.getElementById('pastNotesCounter');
+  notesInput.addEventListener('input', () => updateCharCounter(notesInput, notesCounter));
+  document.getElementById('pastNotesInput').addEventListener('input', () => updateCharCounter(document.getElementById('pastNotesInput'), pastNotesCounter));
+
+  function getRecords() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function saveRecords(records) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  }
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  // Trend calculation
+  function calculateTrend(records, days) {
+    let filtered = records;
+    if (days > 0) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - days);
+      filtered = records.filter(r => new Date(r.date + 'T' + (r.time || '12:00')) >= cutoff);
+    }
+    if (filtered.length < 2) return { direction: 'nodata', text: 'אין מספיק נתונים', data: filtered };
+
+    const reversed = [...filtered].reverse(); // oldest first
+
+    // For long spans, aggregate by month before calculating trend
+    const firstDate = new Date(reversed[0].date + 'T12:00:00');
+    const lastDate = new Date(reversed[reversed.length - 1].date + 'T12:00:00');
+    const spanDays = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
+
+    let trendData;
+    if (spanDays > 60) {
+      // Group by month and average
+      const months = {};
+      reversed.forEach(r => {
+        const d = new Date(r.date + 'T12:00:00');
+        const key = d.getFullYear() + '-' + String(d.getMonth()).padStart(2, '0');
+        if (!months[key]) months[key] = [];
+        months[key].push(r.level);
+      });
+      trendData = Object.keys(months).sort().map(k => months[k].reduce((a, b) => a + b, 0) / months[k].length);
+    } else {
+      trendData = reversed.map(r => r.level);
+    }
+
+    // Linear regression
+    const n = trendData.length;
+    if (n < 2) return { direction: 'nodata', text: 'אין מספיק נתונים', data: filtered };
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    for (let i = 0; i < n; i++) {
+      sumX += i;
+      sumY += trendData[i];
+      sumXY += i * trendData[i];
+      sumX2 += i * i;
+    }
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+
+    const threshold = 0.15;
+    let direction, text;
+    if (slope < -threshold) {
+      direction = 'improving';
+      text = 'משתפר';
+    } else if (slope > threshold) {
+      direction = 'worsening';
+      text = 'מחמיר';
+    } else {
+      direction = 'stable';
+      text = 'יציב';
+    }
+
+    return { direction, text, data: filtered, slope };
+  }
+
+  // Chart drawing
+  function drawChart(records, days) {
+    const canvas = document.getElementById('trendChart');
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    const W = rect.width;
+    const H = rect.height;
+
+    ctx.clearRect(0, 0, W, H);
+
+    let filtered = records;
+    if (days > 0) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - days);
+      filtered = records.filter(r => new Date(r.date + 'T' + (r.time || '12:00')) >= cutoff);
+    }
+
+    if (filtered.length === 0) return;
+
+    const rawData = [...filtered].reverse(); // oldest first
+    const heMonths = ['ינו', 'פבר', 'מרץ', 'אפר', 'מאי', 'יוני', 'יולי', 'אוג', 'ספט', 'אוק', 'נוב', 'דצמ'];
+
+    const firstDate = new Date(rawData[0].date + 'T12:00:00');
+    const lastDate = new Date(rawData[rawData.length - 1].date + 'T12:00:00');
+    const spanDays = (lastDate - firstDate) / (1000 * 60 * 60 * 24);
+
+    // For long spans (>60 days), aggregate by month
+    let data, xLabels;
+    if (spanDays > 60) {
+      const months = {};
+      rawData.forEach(r => {
+        const d = new Date(r.date + 'T12:00:00');
+        const key = d.getFullYear() + '-' + String(d.getMonth()).padStart(2, '0');
+        if (!months[key]) months[key] = { levels: [], month: d.getMonth(), year: d.getFullYear() };
+        months[key].levels.push(r.level);
+      });
+      const sorted = Object.keys(months).sort();
+      data = sorted.map(k => ({
+        level: Math.round((months[k].levels.reduce((a, b) => a + b, 0) / months[k].levels.length) * 2) / 2
+      }));
+      xLabels = sorted.map(k => heMonths[months[k].month]);
+    } else {
+      data = rawData;
+      xLabels = null; // will compute per-point below
+    }
+
+    const padding = { top: 20, bottom: 30, left: 35, right: 15 };
+    const chartW = W - padding.left - padding.right;
+    const chartH = H - padding.top - padding.bottom;
+
+    // Y axis (0-7)
+    ctx.strokeStyle = '#e5e5e5';
+    ctx.lineWidth = 0.5;
+    ctx.fillStyle = '#a3a3a3';
+    ctx.font = '10px Outfit, sans-serif';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 7; i++) {
+      const y = padding.top + chartH - (i / 7) * chartH;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, y);
+      ctx.lineTo(W - padding.right, y);
+      ctx.stroke();
+      ctx.fillText(i.toString(), padding.left - 8, y + 3);
+    }
+
+    // Plot points and line
+    const points = data.map((r, i) => ({
+      x: padding.left + (data.length === 1 ? chartW / 2 : (i / (data.length - 1)) * chartW),
+      y: padding.top + chartH - (r.level / 7) * chartH,
+      level: r.level
+    }));
+
+    // Area fill
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, padding.top + chartH);
+    points.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(points[points.length - 1].x, padding.top + chartH);
+    ctx.closePath();
+    const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
+    gradient.addColorStop(0, 'rgba(139, 92, 246, 0.15)');
+    gradient.addColorStop(1, 'rgba(139, 92, 246, 0.01)');
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+
+    // Trend line (linear regression)
+    if (data.length >= 2) {
+      const n = data.length;
+      let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+      for (let i = 0; i < n; i++) {
+        sumX += i; sumY += data[i].level;
+        sumXY += i * data[i].level; sumX2 += i * i;
+      }
+      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+      const intercept = (sumY - slope * sumX) / n;
+
+      const startY = padding.top + chartH - (intercept / 7) * chartH;
+      const endY = padding.top + chartH - ((intercept + slope * (n - 1)) / 7) * chartH;
+
+      ctx.beginPath();
+      ctx.strokeStyle = slope < -0.05 ? '#059669' : slope > 0.05 ? '#e11d48' : '#d97706';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.moveTo(points[0].x, startY);
+      ctx.lineTo(points[points.length - 1].x, endY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Dots
+    points.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+      ctx.strokeStyle = '#8b5cf6';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // X axis labels
+    ctx.fillStyle = '#a3a3a3';
+    ctx.font = '9px Outfit, sans-serif';
+    ctx.textAlign = 'center';
+
+    if (xLabels) {
+      // Aggregated view: one label per point (month)
+      points.forEach((p, i) => {
+        ctx.fillText(xLabels[i], p.x, H - 8);
+      });
+    } else if (spanDays > 30) {
+      // Medium span: day + month
+      const step = Math.ceil(data.length / 6);
+      let lastShown = '';
+      for (let i = 0; i < data.length; i += step) {
+        const d = new Date(data[i].date + 'T12:00:00');
+        const label = d.getDate() + ' ' + heMonths[d.getMonth()];
+        if (label !== lastShown) {
+          ctx.fillText(label, points[i].x, H - 8);
+          lastShown = label;
+        }
+      }
+    } else {
+      // Short span: DD/MM
+      const step = data.length <= 7 ? 1 : Math.ceil(data.length / 5);
+      let lastShown = '';
+      for (let i = 0; i < data.length; i += step) {
+        const d = new Date(data[i].date + 'T12:00:00');
+        const label = d.getDate() + '/' + (d.getMonth() + 1);
+        if (label !== lastShown) {
+          ctx.fillText(label, points[i].x, H - 8);
+          lastShown = label;
+        }
+      }
+      if ((data.length - 1) % step !== 0) {
+        const d = new Date(data[data.length - 1].date + 'T12:00:00');
+        const label = d.getDate() + '/' + (d.getMonth() + 1);
+        if (label !== lastShown) {
+          ctx.fillText(label, points[points.length - 1].x, H - 8);
+        }
+      }
+    }
+  }
+
+  function updateTrend() {
+    const records = getRecords();
+    if (records.length < 1) {
+      trendCard.style.display = 'none';
+      return;
+    }
+    trendCard.style.display = 'block';
+    const trend = calculateTrend(records, currentPeriod);
+    const indicator = document.getElementById('trendIndicator');
+    const trendText = document.getElementById('trendText');
+    indicator.className = 'trend-indicator ' + trend.direction;
+    trendText.textContent = trend.text;
+
+    drawChart(records, currentPeriod);
+  }
+
+  // Period buttons
+  document.querySelectorAll('.period-btn').forEach(btn => {
+    safeTouchBtn(btn, () => {
+      document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentPeriod = parseInt(btn.dataset.days);
+      updateTrend();
+    });
+  });
+
+  function render() {
+    const records = getRecords();
+    if (records.length === 0) {
+      recordsCard.style.display = 'none';
+      trendCard.style.display = 'none';
+      return;
+    }
+    recordsCard.style.display = 'block';
+    recordCount.textContent = records.length + ' רשומות';
+    recordsList.innerHTML = records.map((r, i) => {
+      const colorClass = getPainColor(r.level);
+      const levelText = r.level % 1 === 0 ? r.level : r.level.toFixed(1);
+      return `<div class="record" style="animation-delay:${i * 0.03}s">
+        <div class="pain-score ${colorClass}">${levelText}</div>
+        <div class="rec-info">
+          <div class="rec-date">${formatDate(r.date)}${r.time ? ' ' + r.time : ''}</div>
+          <div class="rec-label">${getPainLabel(r.level)}</div>
+          ${r.note ? `<div class="rec-note">${escapeHtml(r.note)}</div>` : ''}
+        </div>
+        <button class="delete-btn" onclick="deleteRecord(${i})" type="button" title="מחיקה">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+    }).join('');
+    updateTrend();
+    updateDailyStatus();
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Save
+  function handleSave() {
+    const level = parseFloat(painSlider.value);
+    const note = notesInput.value.trim();
+    const records = getRecords();
+    const now = new Date();
+    const time = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    records.unshift({ date: getTodayStr(), time, level, note });
+    saveRecords(records);
+    render();
+    painSlider.value = 0;
+    updateSliderDisplay(painSlider, levelDisplay, levelLabel);
+    notesInput.value = '';
+    updateCharCounter(notesInput, notesCounter);
+    showToast('הרשומה נשמרה');
+  }
+
+  // Safe touch handler - only fires if touch started on the same button
+  function safeTouchBtn(btn, handler) {
+    let touchedHere = false;
+    btn.addEventListener('touchstart', function() { touchedHere = true; }, { passive: true });
+    btn.addEventListener('touchmove', function() { touchedHere = false; }, { passive: true });
+    btn.addEventListener('touchend', function(e) {
+      if (touchedHere) { e.preventDefault(); handler(); }
+      touchedHere = false;
+    });
+    btn.addEventListener('click', handler);
+  }
+
+  safeTouchBtn(saveBtn, handleSave);
+
+  // Delete
+  function deleteRecord(index) {
+    const records = getRecords();
+    records.splice(index, 1);
+    saveRecords(records);
+    render();
+    showToast('הרשומה נמחקה');
+  }
+
+  // Toggle past form
+  const togglePastBtn = document.getElementById('togglePastBtn');
+  const pastForm = document.getElementById('pastForm');
+
+  function handleTogglePast() {
+    const open = pastForm.style.display === 'none';
+    pastForm.style.display = open ? 'block' : 'none';
+    togglePastBtn.textContent = open ? 'ביטול' : 'הוספת רשומה ישנה +';
+    togglePastBtn.classList.toggle('cancel-mode', open);
+    if (open) document.getElementById('pastDate').value = getTodayStr();
+  }
+
+  safeTouchBtn(togglePastBtn, handleTogglePast);
+
+  // Save past
+  function handleSavePast() {
+    const level = parseFloat(pastPainSlider.value);
+    const note = document.getElementById('pastNotesInput').value.trim();
+    const date = document.getElementById('pastDate').value;
+    const time = document.getElementById('pastTime').value;
+    if (!date || !time) {
+      showToast('מלאי תאריך ושעה');
+      return;
+    }
+    const records = getRecords();
+    records.push({ date, time, level, note });
+    records.sort((a, b) => {
+      const da = a.date + (a.time || '00:00');
+      const db = b.date + (b.time || '00:00');
+      return db.localeCompare(da);
+    });
+    saveRecords(records);
+    render();
+    pastPainSlider.value = 0;
+    updateSliderDisplay(pastPainSlider, pastLevelDisplay, pastLevelLabel);
+    document.getElementById('pastNotesInput').value = '';
+    updateCharCounter(document.getElementById('pastNotesInput'), pastNotesCounter);
+    document.getElementById('pastTime').value = '';
+    pastForm.style.display = 'none';
+    togglePastBtn.textContent = 'הוספת רשומה ישנה +';
+    togglePastBtn.classList.remove('cancel-mode');
+    showToast('רשומה מהעבר נשמרה');
+  }
+
+  safeTouchBtn(document.getElementById('savePastBtn'), handleSavePast);
+
+  // Export
+  function handleExport() {
+    const records = getRecords();
+    if (records.length === 0) { showToast('אין רשומות להעתקה'); return; }
+    const text = records.map(r => formatDate(r.date) + (r.time ? ' ' + r.time : '') + ' | כאב: ' + r.level + '/7' + (r.note ? ' | ' + r.note : '')).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('הועתק ללוח');
+    }).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('הועתק ללוח');
+    });
+  }
+
+  safeTouchBtn(document.getElementById('exportBtn'), handleExport);
+
+  // Clear all
+  function handleClear() {
+    if (getRecords().length === 0) { showToast('אין רשומות'); return; }
+    if (confirm('למחוק את כל הרשומות?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      render();
+      showToast('כל הרשומות נמחקו');
+    }
+  }
+
+  safeTouchBtn(document.getElementById('clearBtn'), handleClear);
+
+  // Backup
+  function handleBackup() {
+    const records = getRecords();
+    if (records.length === 0) { showToast('אין רשומות לגיבוי'); return; }
+    const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pain-backup-' + getTodayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('הגיבוי הורד');
+  }
+
+  safeTouchBtn(document.getElementById('backupBtn'), handleBackup);
+
+  // Restore
+  document.getElementById('restoreFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) { showToast('קובץ גיבוי לא תקין'); return; }
+        const existing = getRecords();
+        if (existing.length > 0 && !confirm('זה יחליף את ' + existing.length + ' הרשומות הנוכחיות. להמשיך?')) return;
+        saveRecords(data);
+        render();
+        showToast(data.length + ' רשומות שוחזרו');
+      } catch {
+        showToast('קובץ גיבוי לא תקין');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  // Resize chart on window resize
+  window.addEventListener('resize', () => {
+    if (getRecords().length > 0) updateTrend();
+  });
+
+  // Auto backup every 7 days
+  const BACKUP_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 days in ms
+  const LAST_BACKUP_KEY = 'pain_last_auto_backup';
+
+  function checkAutoBackup() {
+    const records = getRecords();
+    if (records.length === 0) return;
+    const lastBackup = parseInt(localStorage.getItem(LAST_BACKUP_KEY) || '0');
+    const now = Date.now();
+    if (now - lastBackup >= BACKUP_INTERVAL) {
+      doAutoBackup(records);
+    }
+  }
+
+  function doAutoBackup(records) {
+    const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pain-auto-backup-' + getTodayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()));
+    showToast('גיבוי אוטומטי הורד');
+  }
+
+  // Daily status - 2 slots
+  function updateDailyStatus() {
+    const today = getTodayStr();
+    const records = getRecords().filter(r => r.date === today);
+
+    const slots = [
+      { id: 'Morning', from: 0, to: 14 },
+      { id: 'Evening', from: 14, to: 24 }
+    ];
+
+    const nowHour = new Date().getHours();
+
+    slots.forEach(slot => {
+      const el = document.getElementById('slot' + slot.id);
+      const timeEl = document.getElementById('slot' + slot.id + 'Time');
+      const record = records.find(r => {
+        if (!r.time) return false;
+        const hour = parseInt(r.time.split(':')[0]);
+        return hour >= slot.from && hour < slot.to;
+      });
+
+      el.classList.remove('done', 'pending');
+      if (record) {
+        el.classList.add('done');
+        timeEl.textContent = record.time;
+      } else if (nowHour >= slot.from && nowHour < slot.to) {
+        el.classList.add('pending');
+        timeEl.textContent = '—';
+      } else if (nowHour >= slot.to) {
+        el.classList.add('pending');
+        timeEl.textContent = 'חסר';
+      } else {
+        timeEl.textContent = '—';
+      }
+    });
+  }
+
+  checkAutoBackup();
+
+  render();
+  updateDailyStatus();
+
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+
+</body>
+</html>

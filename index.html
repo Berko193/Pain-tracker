@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#f5f3ff">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<title>Pain Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  button, input, textarea { touch-action: manipulation; }
+
+  :root {
+    --purple-50: #f5f3ff;
+    --purple-100: #ede9fe;
+    --purple-200: #ddd6fe;
+    --purple-300: #c4b5fd;
+    --purple-400: #a78bfa;
+    --purple-500: #8b5cf6;
+    --purple-600: #7c3aed;
+    --purple-700: #6d28d9;
+    --pink-50: #fdf2f8;
+    --pink-100: #fce7f3;
+    --pink-200: #fbcfe8;
+    --pink-300: #f9a8d4;
+    --pink-400: #f472b6;
+    --pink-500: #ec4899;
+    --pink-600: #db2777;
+    --gray-50: #fafafa;
+    --gray-100: #f5f5f5;
+    --gray-200: #e5e5e5;
+    --gray-300: #d4d4d4;
+    --gray-400: #a3a3a3;
+    --gray-500: #737373;
+    --gray-600: #525252;
+    --gray-700: #404040;
+    --gray-800: #262626;
+    --green: #059669;
+    --green-bg: #ecfdf5;
+    --yellow: #d97706;
+    --yellow-bg: #fffbeb;
+    --red: #e11d48;
+    --red-bg: #fff1f2;
+    --red-border: #fecdd3;
+    --radius: 16px;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(160deg, var(--purple-50) 0%, #faf5ff 40%, #f5f0ff 100%);
+    color: var(--gray-700);
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    right: -30%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -30%;
+    left: -20%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(168,85,247,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* header */
+  header {
+    text-align: center;
+    padding: 32px 0 28px;
+    animation: fadeDown 0.6s ease-out;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  header .icon {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--purple-400), var(--purple-600));
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+  }
+
+  header .icon svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 1.8rem;
+    color: var(--gray-800);
+    letter-spacing: -0.01em;
+  }
+
+  header .date {
+    font-size: 0.82rem;
+    color: var(--gray-400);
+    margin-top: 6px;
+    font-weight: 400;
+  }
+
+  /* card */
+  .card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 24px rgba(139, 92, 246, 0.06), 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid rgba(196, 181, 253, 0.4);
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.5s ease-out both;
+  }
+
+  .card:nth-child(2) { animation-delay: 0.08s; }
+  .card:nth-child(3) { animation-delay: 0.14s; }
+  .card:nth-child(4) { animation-delay: 0.2s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* pain input */
+  .pain-input-section {
+    margin-bottom: 20px;
+  }
+
+  .pain-input-section label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--purple-400);
+    margin-bottom: 8px;
+  }
+
+  .pain-level-display {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .pain-level-display .level-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    line-height: 1;
+  }
+
+  .pain-level-display .level-label {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .pain-slider {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 4px;
+    outline: none;
+    margin-bottom: 8px;
+  }
+
+  .pain-slider::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #a7f3d0, #fde68a, #fca5a5, #ef4444);
+  }
+
+  .pain-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--purple-500);
+    margin-top: -10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .pain-slider::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #a7f3d0, #fde68a, #fca5a5, #ef4444);
+  }
+
+  .pain-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--purple-500);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    color: var(--gray-400);
+    font-weight: 500;
+  }
+
+  /* notes field */
+  .notes-field {
+    margin-bottom: 20px;
+  }
+
+  .notes-field label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--purple-400);
+    margin-bottom: 8px;
+  }
+
+  .notes-field textarea {
+    width: 100%;
+    min-height: 70px;
+    border: 1.5px solid var(--purple-200);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--gray-800);
+    background: rgba(245, 243, 255, 0.5);
+    outline: none;
+    transition: all 0.2s ease;
+    resize: vertical;
+  }
+
+  .notes-field textarea::placeholder {
+    color: var(--purple-300);
+  }
+
+  .notes-field textarea:focus {
+    border-color: var(--purple-400);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  }
+
+  .char-counter {
+    text-align: right;
+    font-size: 0.7rem;
+    color: var(--gray-400);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .char-counter.near-limit {
+    color: var(--yellow);
+  }
+
+  .char-counter.at-limit {
+    color: var(--red);
+  }
+
+  .save-btn {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--purple-500), var(--purple-600));
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
+  }
+
+  .save-btn:active {
+    transform: scale(0.97);
+    opacity: 0.85;
+  }
+
+  /* trend card */
+  .trend-card { padding: 24px 16px; }
+
+  .trend-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding: 0 8px;
+  }
+
+  .trend-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: var(--gray-800);
+  }
+
+  .trend-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  .trend-indicator.improving {
+    background: var(--green-bg);
+    color: var(--green);
+  }
+
+  .trend-indicator.worsening {
+    background: var(--red-bg);
+    color: var(--red);
+  }
+
+  .trend-indicator.stable {
+    background: var(--yellow-bg);
+    color: var(--yellow);
+  }
+
+  .trend-indicator.nodata {
+    background: var(--gray-100);
+    color: var(--gray-400);
+  }
+
+  .trend-indicator svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    margin-bottom: 12px;
+  }
+
+  .chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .trend-period-btns {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .period-btn {
+    border: 1.5px solid var(--purple-200);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--purple-500);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .period-btn.active {
+    background: var(--purple-500);
+    color: white;
+    border-color: var(--purple-500);
+  }
+
+  .period-btn:active { opacity: 0.7; }
+
+  /* records */
+  .records-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .records-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 1.2rem;
+    color: var(--gray-800);
+  }
+
+  .records-header .count {
+    font-size: 0.72rem;
+    color: var(--purple-500);
+    background: var(--purple-100);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .record {
+    display: flex;
+    align-items: flex-start;
+    padding: 14px 14px;
+    border-radius: 12px;
+    margin-bottom: 4px;
+    transition: background 0.15s ease;
+    animation: fadeIn 0.3s ease-out both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .record:active { background: var(--purple-50); }
+
+  .record .pain-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .record .pain-dot.level-low { background: #059669; }
+  .record .pain-dot.level-med { background: #d97706; }
+  .record .pain-dot.level-high { background: #e11d48; }
+
+  .record .rec-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .record .rec-date {
+    font-size: 0.78rem;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .record .rec-note {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    margin-top: 3px;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+
+  .record .rec-level {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-left: 10px;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .record .delete-btn {
+    margin-left: 8px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.4;
+    transition: all 0.15s ease;
+    color: var(--gray-400);
+    align-self: center;
+  }
+
+  .delete-btn:active { opacity: 1; background: var(--red-bg); color: var(--red); }
+
+  /* action buttons */
+  .action-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .action-btn {
+    flex: 1;
+    height: 44px;
+    border: 1.5px solid var(--purple-200);
+    border-radius: 12px;
+    background: rgba(245, 243, 255, 0.5);
+    color: var(--purple-600);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .action-btn:active { transform: scale(0.96); opacity: 0.8; }
+
+  .clear-btn {
+    border-color: var(--red-border);
+    color: var(--red);
+    background: var(--red-bg);
+  }
+
+  .restore-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: var(--green-bg) !important;
+    border-color: #a7f3d0 !important;
+    color: var(--green) !important;
+  }
+
+  .restore-label:active { transform: scale(0.96); opacity: 0.8; }
+
+  /* toast */
+  .toast {
+    position: fixed;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--gray-800);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    z-index: 100;
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* toggle past */
+  .toggle-past-btn {
+    width: 100%;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--purple-500);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .toggle-past-btn:active { opacity: 0.7; }
+
+  .past-form {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--purple-100);
+  }
+
+  .past-form input[type="date"],
+  .past-form input[type="time"] {
+    width: 100%;
+    height: 52px;
+    border: 1.5px solid var(--purple-200);
+    border-radius: 12px;
+    padding: 0 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--gray-800);
+    background: rgba(245, 243, 255, 0.5);
+    outline: none;
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+  }
+
+  .past-form input[type="date"]:focus,
+  .past-form input[type="time"]:focus {
+    border-color: var(--purple-400);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  }
+
+  .past-save-btn {
+    background: linear-gradient(135deg, var(--purple-600), var(--purple-700)) !important;
+    margin-top: 6px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .field {
+    flex: 1;
+    position: relative;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--purple-400);
+    margin-bottom: 8px;
+  }
+
+  /* responsive */
+  @media (max-width: 480px) {
+    .app { padding: 16px 16px calc(80px + env(safe-area-inset-bottom)); }
+    .card { padding: 22px 18px; }
+    header h1 { font-size: 1.55rem; }
+    .save-btn { height: 50px; font-size: 0.95rem; }
+    .record { padding: 12px 10px; }
+    .record .rec-date { font-size: 0.72rem; }
+    .trend-card { padding: 20px 12px; }
+  }
+
+  @media (max-width: 430px) and (min-height: 800px) {
+    header { padding: 28px 0 24px; }
+    .save-btn { height: 52px; }
+  }
+
+  @media (display-mode: standalone) {
+    header { padding-top: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="white" fill="none" stroke-width="1.5"/><path d="M12 6v6l4 2" stroke="white" fill="none" stroke-width="2"/></svg>
+    </div>
+    <h1>Pain Tracker</h1>
+    <div class="date" id="todayDate"></div>
+  </header>
+
+  <div class="card">
+    <div class="pain-input-section">
+      <label>Pain Level</label>
+      <div class="pain-level-display">
+        <div class="level-number" id="levelDisplay">0</div>
+        <div class="level-label" id="levelLabel">No pain</div>
+      </div>
+      <input type="range" class="pain-slider" id="painSlider" min="0" max="7" step="0.5" value="0">
+      <div class="slider-labels">
+        <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+      </div>
+    </div>
+    <div class="notes-field">
+      <label>Notes (optional)</label>
+      <textarea id="notesInput" placeholder="How are you feeling? What helped or made it worse?" maxlength="200"></textarea>
+      <div class="char-counter" id="notesCounter">0 / 200</div>
+    </div>
+    <button class="save-btn" id="saveBtn" type="button">Save Record</button>
+    <button class="toggle-past-btn" id="togglePastBtn" type="button">+ Add Past Record</button>
+    <div class="past-form" id="pastForm" style="display:none;">
+      <div class="input-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="pastDate" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Time (24H)</label>
+          <input type="time" id="pastTime" autocomplete="off">
+        </div>
+      </div>
+      <div class="pain-input-section">
+        <label>Pain Level</label>
+        <div class="pain-level-display">
+          <div class="level-number" id="pastLevelDisplay">0</div>
+          <div class="level-label" id="pastLevelLabel">No pain</div>
+        </div>
+        <input type="range" class="pain-slider" id="pastPainSlider" min="0" max="7" step="0.5" value="0">
+        <div class="slider-labels">
+          <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+        </div>
+      </div>
+      <div class="notes-field">
+        <label>Notes (optional)</label>
+        <textarea id="pastNotesInput" placeholder="Notes..." maxlength="200"></textarea>
+        <div class="char-counter" id="pastNotesCounter">0 / 200</div>
+      </div>
+      <button class="save-btn past-save-btn" id="savePastBtn" type="button">Save Past Record</button>
+    </div>
+  </div>
+
+  <!-- Trend Chart -->
+  <div class="card trend-card" id="trendCard" style="display:none;">
+    <div class="trend-header">
+      <h2>Trend</h2>
+      <div class="trend-indicator nodata" id="trendIndicator">
+        <span id="trendText">No data</span>
+      </div>
+    </div>
+    <div class="chart-container">
+      <canvas id="trendChart"></canvas>
+    </div>
+    <div class="trend-period-btns">
+      <button class="period-btn active" data-days="7" type="button">7 Days</button>
+      <button class="period-btn" data-days="14" type="button">14 Days</button>
+      <button class="period-btn" data-days="30" type="button">30 Days</button>
+      <button class="period-btn" data-days="0" type="button">All</button>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="card" id="recordsCard" style="display:none;">
+    <div class="records-header">
+      <h2>History</h2>
+      <div class="count" id="recordCount"></div>
+    </div>
+    <div id="recordsList"></div>
+    <div class="action-row">
+      <button class="action-btn" id="exportBtn" type="button">Copy All</button>
+      <button class="action-btn clear-btn" id="clearBtn" type="button">Clear All</button>
+    </div>
+  </div>
+
+  <!-- Backup -->
+  <div class="card">
+    <div class="records-header">
+      <h2>Backup</h2>
+    </div>
+    <div class="action-row">
+      <button class="action-btn" id="backupBtn" type="button">Download Backup</button>
+      <label class="action-btn restore-label" id="restoreLabel">
+        Load Backup
+        <input type="file" id="restoreFile" accept=".json" style="display:none">
+      </label>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Saved</div>
+
+<script>
+  const STORAGE_KEY = 'pain_records';
+  const painSlider = document.getElementById('painSlider');
+  const levelDisplay = document.getElementById('levelDisplay');
+  const levelLabel = document.getElementById('levelLabel');
+  const notesInput = document.getElementById('notesInput');
+  const saveBtn = document.getElementById('saveBtn');
+  const recordsList = document.getElementById('recordsList');
+  const recordsCard = document.getElementById('recordsCard');
+  const recordCount = document.getElementById('recordCount');
+  const trendCard = document.getElementById('trendCard');
+  const toast = document.getElementById('toast');
+  const todayDate = document.getElementById('todayDate');
+
+  let currentPeriod = 7;
+
+  const painLabels = [
+    'No pain', 'Minimal', 'Mild', 'Mild-moderate',
+    'Moderate', 'Moderate-severe', 'Severe', 'Worst possible'
+  ];
+
+  function getPainLabel(level) {
+    return painLabels[Math.round(level)] || '';
+  }
+
+  function getPainColor(level) {
+    if (level <= 2) return 'level-low';
+    if (level <= 4.5) return 'level-med';
+    return 'level-high';
+  }
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function getTodayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  todayDate.textContent = formatDate(getTodayStr());
+
+  // Slider updates
+  function updateSliderDisplay(slider, display, label) {
+    const val = parseFloat(slider.value);
+    display.textContent = val % 1 === 0 ? val : val.toFixed(1);
+    label.textContent = getPainLabel(val);
+  }
+
+  painSlider.addEventListener('input', () => updateSliderDisplay(painSlider, levelDisplay, levelLabel));
+
+  const pastPainSlider = document.getElementById('pastPainSlider');
+  const pastLevelDisplay = document.getElementById('pastLevelDisplay');
+  const pastLevelLabel = document.getElementById('pastLevelLabel');
+  pastPainSlider.addEventListener('input', () => updateSliderDisplay(pastPainSlider, pastLevelDisplay, pastLevelLabel));
+
+  // Char counters
+  const MAX_CHARS = 200;
+  function updateCharCounter(textarea, counter) {
+    const len = textarea.value.length;
+    counter.textContent = len + ' / ' + MAX_CHARS;
+    counter.classList.remove('near-limit', 'at-limit');
+    if (len >= MAX_CHARS) counter.classList.add('at-limit');
+    else if (len >= MAX_CHARS * 0.8) counter.classList.add('near-limit');
+  }
+
+  const notesCounter = document.getElementById('notesCounter');
+  const pastNotesCounter = document.getElementById('pastNotesCounter');
+  notesInput.addEventListener('input', () => updateCharCounter(notesInput, notesCounter));
+  document.getElementById('pastNotesInput').addEventListener('input', () => updateCharCounter(document.getElementById('pastNotesInput'), pastNotesCounter));
+
+  function getRecords() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function saveRecords(records) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  }
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  // Trend calculation
+  function calculateTrend(records, days) {
+    let filtered = records;
+    if (days > 0) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - days);
+      filtered = records.filter(r => new Date(r.date + 'T' + (r.time || '12:00')) >= cutoff);
+    }
+    if (filtered.length < 2) return { direction: 'nodata', text: 'Not enough data', data: filtered };
+
+    // Linear regression on pain levels
+    const n = filtered.length;
+    const reversed = [...filtered].reverse(); // oldest first
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    for (let i = 0; i < n; i++) {
+      sumX += i;
+      sumY += reversed[i].level;
+      sumXY += i * reversed[i].level;
+      sumX2 += i * i;
+    }
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+
+    // Calculate average change per record
+    const threshold = 0.05; // sensitivity
+    let direction, text;
+    if (slope < -threshold) {
+      direction = 'improving';
+      text = 'Improving';
+    } else if (slope > threshold) {
+      direction = 'worsening';
+      text = 'Getting worse';
+    } else {
+      direction = 'stable';
+      text = 'Stable';
+    }
+
+    return { direction, text, data: filtered, slope };
+  }
+
+  // Chart drawing
+  function drawChart(records, days) {
+    const canvas = document.getElementById('trendChart');
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    const W = rect.width;
+    const H = rect.height;
+
+    ctx.clearRect(0, 0, W, H);
+
+    let filtered = records;
+    if (days > 0) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - days);
+      filtered = records.filter(r => new Date(r.date + 'T' + (r.time || '12:00')) >= cutoff);
+    }
+
+    if (filtered.length === 0) return;
+
+    const data = [...filtered].reverse(); // oldest first
+    const padding = { top: 20, bottom: 30, left: 35, right: 15 };
+    const chartW = W - padding.left - padding.right;
+    const chartH = H - padding.top - padding.bottom;
+
+    // Y axis (0-7)
+    ctx.strokeStyle = '#e5e5e5';
+    ctx.lineWidth = 0.5;
+    ctx.fillStyle = '#a3a3a3';
+    ctx.font = '10px Outfit, sans-serif';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 7; i++) {
+      const y = padding.top + chartH - (i / 7) * chartH;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, y);
+      ctx.lineTo(W - padding.right, y);
+      ctx.stroke();
+      if (i % 2 === 0 || i === 7) {
+        ctx.fillText(i.toString(), padding.left - 8, y + 3);
+      }
+    }
+
+    // Plot points and line
+    const points = data.map((r, i) => ({
+      x: padding.left + (data.length === 1 ? chartW / 2 : (i / (data.length - 1)) * chartW),
+      y: padding.top + chartH - (r.level / 7) * chartH,
+      level: r.level
+    }));
+
+    // Area fill
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, padding.top + chartH);
+    points.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(points[points.length - 1].x, padding.top + chartH);
+    ctx.closePath();
+    const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
+    gradient.addColorStop(0, 'rgba(139, 92, 246, 0.15)');
+    gradient.addColorStop(1, 'rgba(139, 92, 246, 0.01)');
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.strokeStyle = '#8b5cf6';
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+
+    // Trend line (linear regression)
+    if (data.length >= 2) {
+      const n = data.length;
+      let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+      for (let i = 0; i < n; i++) {
+        sumX += i; sumY += data[i].level;
+        sumXY += i * data[i].level; sumX2 += i * i;
+      }
+      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+      const intercept = (sumY - slope * sumX) / n;
+
+      const startY = padding.top + chartH - (intercept / 7) * chartH;
+      const endY = padding.top + chartH - ((intercept + slope * (n - 1)) / 7) * chartH;
+
+      ctx.beginPath();
+      ctx.strokeStyle = slope < -0.05 ? '#059669' : slope > 0.05 ? '#e11d48' : '#d97706';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.moveTo(points[0].x, startY);
+      ctx.lineTo(points[points.length - 1].x, endY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Dots
+    points.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+      ctx.strokeStyle = '#8b5cf6';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    // X axis labels (dates)
+    if (data.length > 0) {
+      ctx.fillStyle = '#a3a3a3';
+      ctx.font = '9px Outfit, sans-serif';
+      ctx.textAlign = 'center';
+      const step = data.length <= 7 ? 1 : Math.ceil(data.length / 5);
+      for (let i = 0; i < data.length; i += step) {
+        const d = new Date(data[i].date + 'T12:00:00');
+        const label = (d.getMonth() + 1) + '/' + d.getDate();
+        ctx.fillText(label, points[i].x, H - 8);
+      }
+      // Always show last
+      if ((data.length - 1) % step !== 0) {
+        const d = new Date(data[data.length - 1].date + 'T12:00:00');
+        ctx.fillText((d.getMonth() + 1) + '/' + d.getDate(), points[points.length - 1].x, H - 8);
+      }
+    }
+  }
+
+  function updateTrend() {
+    const records = getRecords();
+    if (records.length < 1) {
+      trendCard.style.display = 'none';
+      return;
+    }
+    trendCard.style.display = 'block';
+    const trend = calculateTrend(records, currentPeriod);
+    const indicator = document.getElementById('trendIndicator');
+    const trendText = document.getElementById('trendText');
+    indicator.className = 'trend-indicator ' + trend.direction;
+    trendText.textContent = trend.text;
+
+    drawChart(records, currentPeriod);
+  }
+
+  // Period buttons
+  document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentPeriod = parseInt(btn.dataset.days);
+      updateTrend();
+    });
+    btn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      this.click();
+    });
+  });
+
+  function render() {
+    const records = getRecords();
+    if (records.length === 0) {
+      recordsCard.style.display = 'none';
+      trendCard.style.display = 'none';
+      return;
+    }
+    recordsCard.style.display = 'block';
+    recordCount.textContent = records.length + (records.length === 1 ? ' record' : ' records');
+    recordsList.innerHTML = records.map((r, i) => {
+      const colorClass = getPainColor(r.level);
+      return `<div class="record" style="animation-delay:${i * 0.03}s">
+        <div class="pain-dot ${colorClass}">${r.level}</div>
+        <div class="rec-info">
+          <div class="rec-date">${formatDate(r.date)}${r.time ? ' ' + r.time : ''}</div>
+          ${r.note ? `<div class="rec-note">${escapeHtml(r.note)}</div>` : ''}
+        </div>
+        <button class="delete-btn" onclick="deleteRecord(${i})" type="button" title="Delete">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+    }).join('');
+    updateTrend();
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Save
+  function handleSave() {
+    const level = parseFloat(painSlider.value);
+    const note = notesInput.value.trim();
+    const records = getRecords();
+    const now = new Date();
+    const time = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    records.unshift({ date: getTodayStr(), time, level, note });
+    saveRecords(records);
+    render();
+    painSlider.value = 0;
+    updateSliderDisplay(painSlider, levelDisplay, levelLabel);
+    notesInput.value = '';
+    updateCharCounter(notesInput, notesCounter);
+    showToast('Record saved');
+  }
+
+  saveBtn.addEventListener('click', handleSave);
+  saveBtn.addEventListener('touchend', function(e) { e.preventDefault(); handleSave(); });
+
+  // Delete
+  function deleteRecord(index) {
+    const records = getRecords();
+    records.splice(index, 1);
+    saveRecords(records);
+    render();
+    showToast('Record deleted');
+  }
+
+  // Toggle past form
+  const togglePastBtn = document.getElementById('togglePastBtn');
+  const pastForm = document.getElementById('pastForm');
+
+  function handleTogglePast() {
+    const open = pastForm.style.display === 'none';
+    pastForm.style.display = open ? 'block' : 'none';
+    togglePastBtn.textContent = open ? '- Cancel' : '+ Add Past Record';
+    if (open) document.getElementById('pastDate').value = getTodayStr();
+  }
+
+  togglePastBtn.addEventListener('click', handleTogglePast);
+  togglePastBtn.addEventListener('touchend', function(e) { e.preventDefault(); handleTogglePast(); });
+
+  // Save past
+  function handleSavePast() {
+    const level = parseFloat(pastPainSlider.value);
+    const note = document.getElementById('pastNotesInput').value.trim();
+    const date = document.getElementById('pastDate').value;
+    const time = document.getElementById('pastTime').value;
+    if (!date || !time) {
+      showToast('Fill date and time');
+      return;
+    }
+    const records = getRecords();
+    records.push({ date, time, level, note });
+    records.sort((a, b) => {
+      const da = a.date + (a.time || '00:00');
+      const db = b.date + (b.time || '00:00');
+      return db.localeCompare(da);
+    });
+    saveRecords(records);
+    render();
+    pastPainSlider.value = 0;
+    updateSliderDisplay(pastPainSlider, pastLevelDisplay, pastLevelLabel);
+    document.getElementById('pastNotesInput').value = '';
+    updateCharCounter(document.getElementById('pastNotesInput'), pastNotesCounter);
+    document.getElementById('pastTime').value = '';
+    pastForm.style.display = 'none';
+    togglePastBtn.textContent = '+ Add Past Record';
+    showToast('Past record saved');
+  }
+
+  document.getElementById('savePastBtn').addEventListener('click', handleSavePast);
+  document.getElementById('savePastBtn').addEventListener('touchend', function(e) { e.preventDefault(); handleSavePast(); });
+
+  // Export
+  function handleExport() {
+    const records = getRecords();
+    if (records.length === 0) { showToast('No records to copy'); return; }
+    const text = records.map(r => formatDate(r.date) + (r.time ? ' ' + r.time : '') + ' | Pain: ' + r.level + '/7' + (r.note ? ' | ' + r.note : '')).join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Copied to clipboard');
+    }).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('Copied to clipboard');
+    });
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', handleExport);
+  document.getElementById('exportBtn').addEventListener('touchend', function(e) { e.preventDefault(); handleExport(); });
+
+  // Clear all
+  function handleClear() {
+    if (getRecords().length === 0) { showToast('No records'); return; }
+    if (confirm('Delete all records?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      render();
+      showToast('All records cleared');
+    }
+  }
+
+  document.getElementById('clearBtn').addEventListener('click', handleClear);
+  document.getElementById('clearBtn').addEventListener('touchend', function(e) { e.preventDefault(); handleClear(); });
+
+  // Backup
+  function handleBackup() {
+    const records = getRecords();
+    if (records.length === 0) { showToast('No records to backup'); return; }
+    const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pain-backup-' + getTodayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Backup downloaded');
+  }
+
+  document.getElementById('backupBtn').addEventListener('click', handleBackup);
+  document.getElementById('backupBtn').addEventListener('touchend', function(e) { e.preventDefault(); handleBackup(); });
+
+  // Restore
+  document.getElementById('restoreFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) { showToast('Invalid backup file'); return; }
+        const existing = getRecords();
+        if (existing.length > 0 && !confirm('This will replace your current ' + existing.length + ' records. Continue?')) return;
+        saveRecords(data);
+        render();
+        showToast(data.length + ' records restored');
+      } catch {
+        showToast('Invalid backup file');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  // Resize chart on window resize
+  window.addEventListener('resize', () => {
+    if (getRecords().length > 0) updateTrend();
+  });
+
+  render();
+
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+
+</body>
+</html>
