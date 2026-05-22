@@ -142,12 +142,6 @@
     letter-spacing: -0.01em;
   }
 
-  header .date {
-    font-size: 0.82rem;
-    color: var(--gray-400);
-    margin-top: 6px;
-    font-weight: 400;
-  }
 
   /* card */
   .card {
@@ -177,6 +171,14 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--purple-400);
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  .daily-date {
+    font-size: 0.82rem;
+    color: var(--gray-500);
+    font-weight: 400;
     margin-bottom: 12px;
     text-align: center;
   }
@@ -802,12 +804,12 @@
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="white" fill="none" stroke-width="1.5"/><path d="M12 6v6l4 2" stroke="white" fill="none" stroke-width="2"/></svg>
     </div>
     <h1>Pain Tracker</h1>
-    <div class="date" id="todayDate"></div>
   </header>
 
   <!-- Daily Status -->
   <div class="card daily-status-card">
-    <div class="daily-status-header">דיווחי היום — <span id="dailyDate"></span></div>
+    <div class="daily-status-header">דיווחי היום</div>
+    <div class="daily-date" id="dailyDate"></div>
     <div class="daily-slots">
       <div class="slot" id="slotMorning">
         <div class="slot-label">בוקר</div>
@@ -936,7 +938,6 @@
   const recordCount = document.getElementById('recordCount');
   const trendCard = document.getElementById('trendCard');
   const toast = document.getElementById('toast');
-  const todayDate = document.getElementById('todayDate');
 
   let currentPeriod = 7;
 
@@ -965,7 +966,6 @@
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
 
-  todayDate.textContent = formatDate(getTodayStr());
   document.getElementById('dailyDate').textContent = formatDate(getTodayStr());
 
   // Slider updates
